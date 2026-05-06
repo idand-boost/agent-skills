@@ -1,0 +1,640 @@
+{
+  "version": "1.0.0",
+  "app": {
+    "name": "My Service Integration",
+    "slug": "my_service_integration", // REQUIRED AND MUST START WITH THE ACCOUNT SLUG
+    "description": "Integrates monday.com with My Service",
+    "color": {
+      "hex": "#0073ea",
+      "hsl": {
+        "h": 213,
+        "s": 1,
+        "l": 0.46,
+        "a": 1
+      },
+      "rgb": {
+        "r": 0,
+        "g": 115,
+        "b": 234,
+        "a": 1
+      }
+    },
+    "oauth": {
+      "redirectUri": [
+        "https://tunnel-abc123.apps-tunnel.monday.app/oauth/callback",
+        "https://live1-service-0000000-abcdef.us.monday.app/oauth/callback",
+        "http://localhost:8080/oauth/callback"
+      ],
+      "scopes": [
+        "me:read",
+        "boards:read",
+        "boards:write",
+        "account:read",
+        "updates:write",
+        "notifications:write",
+        "webhooks:write"
+      ]
+    },
+    "features": [
+      // ─────────────────────────────────────────────────────────────
+      // CREDENTIALS — OAuth2 flow for connecting to My Service
+      // ─────────────────────────────────────────────────────────────
+      {
+        "key": "myservice-credentials",
+        "type": "AppFeatureCredentials",
+        "name": "My Service Token",
+        "data": {
+          "name": "My Service Token",
+          "referenceId": {
+            "slug": "myservice-credentials"
+          },
+          "appId": 10000000,
+          "authMethod": "oAuth2",
+          "authConfig": {
+            "clientId": "my-service-client-id",
+            "authorizeRequest": {
+              "url": "https://{{myServiceSlug}}.myservice.com/oauth/authorize?client_id=my-service-client-id&response_type=code&state=new&redirect_uri=https://apps-credentials.monday.com/authorize/oauth2/redirect-uri",
+              "params": []
+            },
+            "tokenRequest": {
+              "url": "https://{{myServiceSlug}}.myservice.com/oauth/token",
+              "body": []
+            },
+            "refreshTokenRequest": {
+              "url": "https://{{myServiceSlug}}.myservice.com/oauth/token",
+              "body": []
+            },
+            "scopeConfig": {
+              "scopes": "read write offline_access",
+              "separator": "Space"
+            },
+            "providerUniqueIdentifierRequest": {
+              "url": "https://live1-service-0000000-abcdef.us.monday.app/auth/myservice/provider-uuid"
+            },
+            "fallbackTokenExpiration": {
+              "tokenTtlSeconds": 3600
+            },
+            "enablePKCE": false
+          },
+          "configured_secret_names": [
+            "clientSecret"
+          ],
+          "description": "Connect your My Service account",
+          "defaultFieldKey": "myServiceToken",
+          "documentationLink": "https://docs.myservice.com/authentication",
+          "mfValidated": true,
+          "parameters": {
+            "description": {
+              "text": "Your My Service account subdomain",
+              "link": {
+                "url": "https://docs.myservice.com/find-subdomain",
+                "text": "How to find your subdomain"
+              }
+            },
+            "fieldTypes": [
+              {
+                "id": 0,
+                "type": "primitive",
+                "fieldKey": "myServiceSlug",
+                "fieldTitle": "Account Subdomain",
+                "information": {
+                  "text": "The subdomain found before .myservice.com in your browser URL"
+                },
+                "placeholder": "your-company",
+                "isOptional": false,
+                "primitiveType": "string",
+                "staticSuffix": "subdomain"
+              }
+            ]
+          }
+        },
+        "secrets": {
+          "clientSecret": "{{MY_SERVICE_CLIENT_SECRET}}"
+        }
+      },
+      // ─────────────────────────────────────────────────────────────
+      // FIELD TYPES
+      // ─────────────────────────────────────────────────────────────
+      // 1. Dynamic dropdown — list of projects, depends on credentials
+      {
+        "key": "myservice-field-project-list",
+        "type": "AppFeatureFieldType",
+        "name": "My Service project list",
+        "build": {
+          "kind": "monday-code"
+        },
+        "data": {
+          "name": "My Service project list",
+          "referenceId": {
+            "slug": "myservice-field-project-list"
+          },
+          "appId": 10000000,
+          "primitiveType": "string",
+          "viewMetadata": {
+            "noOptionsPlaceholder": ""
+          },
+          "description": "A list of projects from My Service",
+          "defaultFieldKey": "projectId",
+          "configurationMetadata": {
+            "remote": {
+              "app": "apps",
+              "type": "appFeatureOptions",
+              "listUrl": "/workflow/myservice/field/project-list"
+            }
+          },
+          "credentialsDependencyConfig": {
+            "credentials": []
+          },
+          "dependencyConfig": {
+            "orderedMandatoryFields": []
+          },
+          "mfValidated": true
+        }
+      },
+      // 2. Dynamic dropdown — list of records, depends on project
+      {
+        "key": "myservice-field-record-list",
+        "type": "AppFeatureFieldType",
+        "name": "My Service record list",
+        "build": {
+          "kind": "monday-code"
+        },
+        "data": {
+          "name": "My Service record list",
+          "referenceId": {
+            "slug": "myservice-field-record-list"
+          },
+          "appId": 10000000,
+          "primitiveType": "string",
+          "viewMetadata": {
+            "noOptionsPlaceholder": ""
+          },
+          "description": "A list of records within a project",
+          "defaultFieldKey": "recordId",
+          "configurationMetadata": {
+            "remote": {
+              "app": "apps",
+              "type": "appFeatureOptions",
+              "listUrl": "/workflow/myservice/field/record-list"
+            }
+          },
+          "credentialsDependencyConfig": {
+            "credentials": []
+          },
+          "dependencyConfig": {
+            "orderedMandatoryFields": [
+              {
+                "sourceFieldTypeReferenceId": {
+                  "slug": "myservice-field-project-list"
+                },
+                "targetFieldKey": "projectId"
+              }
+            ]
+          },
+          "mfValidated": true
+        }
+      },
+      // 3. Static dropdown — operation type, no dependencies
+      {
+        "key": "myservice-field-operation-type",
+        "type": "AppFeatureFieldType",
+        "name": "My Service operation type",
+        "build": {
+          "kind": "monday-code"
+        },
+        "data": {
+          "name": "My Service operation type",
+          "referenceId": {
+            "slug": "myservice-field-operation-type"
+          },
+          "appId": 10000000,
+          "primitiveType": "string",
+          "viewMetadata": {},
+          "description": "The type of operation to perform",
+          "defaultFieldKey": "operationType",
+          "configurationMetadata": {
+            "options": [
+              {
+                "title": "Create",
+                "value": "create"
+              },
+              {
+                "title": "Update",
+                "value": "update"
+              },
+              {
+                "title": "Delete",
+                "value": "delete"
+              }
+            ]
+          },
+          "dependencyConfig": {
+            "orderedMandatoryFields": []
+          },
+          "mfValidated": true
+        }
+      },
+      // 4. Dynamic subfields — record object, shape comes from backend
+      {
+        "key": "myservice-field-record-object",
+        "type": "AppFeatureFieldType",
+        "name": "My Service record object",
+        "build": {
+          "kind": "monday-code"
+        },
+        "data": {
+          "name": "My Service record object",
+          "referenceId": {
+            "slug": "myservice-field-record-object"
+          },
+          "appId": 10000000,
+          "viewMetadata": {},
+          "description": "The fields of a My Service record",
+          "defaultFieldKey": "recordObject",
+          "subFieldsUrl": "/workflow/myservice/field/record-object",
+          "subFieldsDependencyConfig": {
+            "orderedMandatoryFields": [
+              {
+                "sourceFieldTypeReferenceId": {
+                  "slug": "myservice-field-project-list"
+                },
+                "targetFieldKey": "projectId"
+              }
+            ]
+          },
+          "credentialsDependencyConfig": {
+            "credentials": []
+          },
+          "mfValidated": true,
+          "dependencyConfig": {
+            "orderedMandatoryFields": []
+          }
+        }
+      },
+      // 5. Static subfields — result object, shape is always the same
+      {
+        "key": "myservice-field-result-object",
+        "type": "AppFeatureFieldType",
+        "name": "My Service result object",
+        "build": {
+          "kind": "monday-code"
+        },
+        "data": {
+          "name": "My Service result object",
+          "referenceId": {
+            "slug": "myservice-field-result-object"
+          },
+          "appId": 10000000,
+          "viewMetadata": {},
+          "description": "The result returned after an operation",
+          "defaultFieldKey": "resultObject",
+          "staticSubFieldsConfig": [
+            {
+              "key": "id",
+              "title": "Record ID",
+              "type": "primitive",
+              "primitiveType": "string",
+              "isNullable": false,
+              "isArray": false
+            },
+            {
+              "key": "status",
+              "title": "Status",
+              "type": "primitive",
+              "primitiveType": "string",
+              "isNullable": false,
+              "isArray": false
+            },
+            {
+              "key": "createdAt",
+              "title": "Created at",
+              "type": "primitive",
+              "primitiveType": "date",
+              "isNullable": true,
+              "isArray": false
+            }
+          ],
+          "mfValidated": true
+        }
+      },
+      // ─────────────────────────────────────────────────────────────
+      // ACTION BLOCK — create a record in My Service
+      // ─────────────────────────────────────────────────────────────
+      {
+        "key": "myservice-action-create-record",
+        "type": "AppFeatureBlock",
+        "name": "Create My Service record",
+        "build": {
+          "kind": "monday-code"
+        },
+        "data": {
+          "name": "Create My Service record",
+          "referenceId": {
+            "slug": "myservice-action-create-record"
+          },
+          "appId": 10000000,
+          "description": "Creates a new record in the selected My Service project",
+          "inboundFieldsConfig": {
+            "fields": [
+              {
+                "id": 0,
+                "fieldTitle": "Project",
+                "isArray": false,
+                "isNullable": false,
+                "type": "custom",
+                "fieldTypeReferenceId": {
+                  "slug": "myservice-field-project-list"
+                },
+                "allowPrimitiveForm": false,
+                "fieldKey": "projectId"
+              },
+              {
+                "id": 1,
+                "fieldTitle": "Record data",
+                "fieldHeader": "Fill record fields",
+                "isArray": false,
+                "isNullable": false,
+                "type": "custom",
+                "fieldTypeReferenceId": {
+                  "slug": "myservice-field-record-object"
+                },
+                "allowPrimitiveForm": false,
+                "fieldKey": "recordObject",
+                "constraints": {
+                  "subFieldsDependencies": {
+                    "projectId": {
+                      "inboundFieldKey": "projectId"
+                    }
+                  }
+                }
+              },
+              {
+                "id": 2,
+                "fieldTitle": "Board",
+                "isArray": false,
+                "isNullable": false,
+                "type": "custom",
+                "fieldTypeReferenceId": 10380086,
+                "allowPrimitiveForm": false,
+                "fieldKey": "boardId"
+              },
+              {
+                "id": 3,
+                "fieldTitle": "Item",
+                "isArray": false,
+                "isNullable": false,
+                "type": "custom",
+                "fieldTypeReferenceId": 10380092,
+                "allowPrimitiveForm": false,
+                "fieldKey": "itemId",
+                "constraints": {
+                  "dependencies": {
+                    "boardId": {
+                      "inboundFieldKey": "boardId"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "outboundFieldsConfig": {
+            "fields": [
+              {
+                "id": 0,
+                "fieldTitle": "Created record",
+                "isArray": false,
+                "isNullable": false,
+                "type": "custom",
+                "fieldTypeReferenceId": {
+                  "slug": "myservice-field-result-object"
+                },
+                "fieldKey": "resultObject"
+              }
+            ]
+          },
+          "kind": "action",
+          "executionConfig": {
+            "runConfig": {
+              "url": "/workflow/myservice/action/create-record"
+            }
+          },
+          "isAsync": false,
+          "credentialsConfig": {
+            "credentials": [
+              {
+                "id": 1,
+                "credentialsHeader": "Connect your My Service account",
+                "credentialsTitle": "My Service account",
+                "credentialsReferenceId": {
+                  "slug": "myservice-credentials"
+                },
+                "credentialsKey": "myServiceToken",
+                "credentialsPlaceholder": "your-company.myservice.com"
+              }
+            ]
+          },
+          "viewMetadata": {
+            "previewInboundFieldKeys": [
+              "projectId"
+            ]
+          },
+          "mfValidated": true
+        }
+      },
+      // ─────────────────────────────────────────────────────────────
+      // TRIGGER BLOCK — fires when a record changes in My Service
+      // ─────────────────────────────────────────────────────────────
+      {
+        "key": "myservice-trigger-record-changed",
+        "type": "AppFeatureBlock",
+        "name": "When a My Service record changes",
+        "build": {
+          "kind": "monday-code"
+        },
+        "data": {
+          "name": "When a My Service record changes",
+          "referenceId": {
+            "slug": "myservice-trigger-record-changed"
+          },
+          "appId": 10000000,
+          "inboundFieldsConfig": {
+            "fields": [
+              {
+                "id": 0,
+                "fieldTitle": "Project",
+                "isArray": false,
+                "isNullable": false,
+                "type": "custom",
+                "fieldTypeReferenceId": {
+                  "slug": "myservice-field-project-list"
+                },
+                "allowPrimitiveForm": false,
+                "fieldKey": "projectId"
+              },
+              {
+                "id": 1,
+                "fieldTitle": "Operation type",
+                "isArray": false,
+                "isNullable": false,
+                "type": "custom",
+                "fieldTypeReferenceId": {
+                  "slug": "myservice-field-operation-type"
+                },
+                "allowPrimitiveForm": false,
+                "fieldKey": "operationType"
+              }
+            ]
+          },
+          "outboundFieldsConfig": {
+            "fields": [
+              {
+                "id": 0,
+                "fieldTitle": "Changed record",
+                "isArray": false,
+                "isNullable": false,
+                "type": "custom",
+                "fieldTypeReferenceId": {
+                  "slug": "myservice-field-result-object"
+                },
+                "fieldKey": "resultObject"
+              },
+              {
+                "id": 1,
+                "fieldTitle": "Record ID",
+                "isArray": false,
+                "isNullable": false,
+                "type": "primitive",
+                "primitiveType": "string",
+                "fieldKey": "recordId"
+              }
+            ]
+          },
+          "kind": "trigger",
+          "executionConfig": {
+            "subscribeConfig": {
+              "url": "/workflow/myservice/trigger/subscribe/record-changed"
+            },
+            "unsubscribeConfig": {
+              "url": "/workflow/myservice/trigger/unsubscribe/record-changed"
+            }
+          },
+          "credentialsConfig": {
+            "credentials": [
+              {
+                "id": 1,
+                "credentialsHeader": "Connect your My Service account",
+                "credentialsTitle": "My Service account",
+                "credentialsReferenceId": {
+                  "slug": "myservice-credentials"
+                },
+                "credentialsKey": "myServiceToken",
+                "credentialsPlaceholder": "your-company.myservice.com"
+              }
+            ]
+          },
+          "viewMetadata": {
+            "previewInboundFieldKeys": [
+              "projectId"
+            ]
+          },
+          "mfValidated": true,
+          "contextsData": {}
+        }
+      },
+      // ─────────────────────────────────────────────────────────────
+      // BOARD VIEW — iframe, static bundle on CDN
+      // ─────────────────────────────────────────────────────────────
+      {
+        "key": "myservice-board-view",
+        "type": "AppFeatureBoardView",
+        "name": "My Service board view",
+        "schemaVersion": "17",
+        "build": {
+          "url": "https://abc123def456.cdn2.monday.app/index.html",
+          "kind": "zip"
+        },
+        "data": {
+          "mode": "iframe",
+          "name": "My Service board view",
+          "description": "View and manage My Service records alongside your board",
+          "uploading": false,
+          "query_parmas": true,
+          "hideBoardControls": false,
+          "isMobileSupported": false
+        }
+      },
+      // ─────────────────────────────────────────────────────────────
+      // DASHBOARD WIDGET — same CDN bundle, different context
+      // ─────────────────────────────────────────────────────────────
+      {
+        "key": "myservice-dashboard-widget",
+        "type": "AppFeatureDashboardWidget",
+        "name": "My Service widget",
+        "schemaVersion": "17",
+        "build": {
+          "url": "https://abc123def456.cdn2.monday.app/index.html",
+          "kind": "zip"
+        },
+        "data": {
+          "mode": "iframe",
+          "name": "My Service widget",
+          "description": "Summary of My Service activity",
+          "uploading": false
+        }
+      },
+      // ─────────────────────────────────────────────────────────────
+      // ITEM VIEW — same CDN bundle, item-level context
+      // ─────────────────────────────────────────────────────────────
+      {
+        "key": "myservice-item-view",
+        "type": "AppFeatureItemView",
+        "name": "My Service item panel",
+        "schemaVersion": "17",
+        "build": {
+          "url": "https://abc123def456.cdn2.monday.app/index.html",
+          "kind": "zip"
+        },
+        "data": {
+          "mode": "iframe",
+          "name": "My Service item panel",
+          "description": "See linked My Service records for this item",
+          "uploading": false,
+          "isMobileSupported": false
+        }
+      },
+      // ─────────────────────────────────────────────────────────────
+      // APP SETTINGS VIEW — served from monday-code backend route
+      // ─────────────────────────────────────────────────────────────
+      {
+        "key": "myservice-settings",
+        "type": "AppFeatureObject",
+        "name": "My Service Settings",
+        "schemaVersion": "8",
+        "build": {
+          "url": "/settings",
+          "kind": "view"
+        },
+        "data": {
+          "mode": "iframe",
+          "name": "My Service Settings",
+          "description": "Manage credentials and preferences",
+          "uploading": false,
+          "query_parmas": true
+        }
+      },
+      // ─────────────────────────────────────────────────────────────
+      // AI AGENT SKILL — describes capabilities to monday Sidekick
+      // ─────────────────────────────────────────────────────────────
+      {
+        "key": "myservice-ai-skills",
+        "type": "AppFeatureAIAgentSkill",
+        "name": "My Service skills",
+        "schemaVersion": "6",
+        "data": {
+          "name": "My Service skills",
+          "description": "Enables the monday Sidekick to interact with My Service on behalf of the user.\n\nCapabilities:\n\nCreate Records\nCreate new records in any My Service project directly from a monday board or via Sidekick prompt.\n\nUpdate Records\nUpdate existing My Service records with values from monday items or manual input.\n\nGet Records\nFetch and display records from a My Service project, including status, dates, and custom fields.\n\nDelete Records\nRemove records from My Service when the corresponding monday item is archived or deleted."
+        }
+      }
+    ]
+  }
+}
