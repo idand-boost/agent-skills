@@ -4,7 +4,6 @@
 const https = require('https')
 const fs = require('fs')
 
-const MONDAY_API_URL = 'https://api.monday.com/v2'
 const CONCURRENCY = 5
 const BATCH_DELAY_MS = 200
 
@@ -123,6 +122,16 @@ async function getBoardColumns(boardId) {
 
 const COLUMN_VALUES_FRAGMENT = `id text ... on DependencyValue { linked_items { id name } }`
 
+function mapColumnsFromIds(cvs, colMap) {
+  const out = {}
+  for (const cv of cvs) {
+    if (!colMap[cv.id]) continue
+    if (cv.linked_items && cv.linked_items.length > 0) out[colMap[cv.id]] = cv.linked_items
+    else if (cv.text) out[colMap[cv.id]] = cv.text
+  }
+  return out
+}
+
 async function getTaskContext(boardId, itemId) {
   const [boardCols, itemData] = await Promise.all([
     getBoardColumns(boardId),
@@ -135,21 +144,8 @@ async function getTaskContext(boardId, itemId) {
   ])
 
   const colMap = Object.fromEntries(boardCols.map(c => [c.id, c.title]))
-  const mapColumns = cvs => {
-    const out = {}
-    for (const cv of cvs) {
-      if (!colMap[cv.id]) continue
-      if (cv.linked_items && cv.linked_items.length > 0) {
-        out[colMap[cv.id]] = cv.linked_items
-      } else if (cv.text) {
-        out[colMap[cv.id]] = cv.text
-      }
-    }
-    return out
-  }
-
   const raw = itemData.items[0]
-  const task = { id: raw.id, name: raw.name, columns: mapColumns(raw.column_values) }
+  const task = { id: raw.id, name: raw.name, columns: mapColumnsFromIds(raw.column_values, colMap) }
 
   const groupData = await query(
     `query ($boardId: [ID!], $groupIds: [String]) {
@@ -161,10 +157,31 @@ async function getTaskContext(boardId, itemId) {
   )
 
   const groupItems = groupData.boards[0].groups[0].items_page.items
-  const prdRaw = groupItems.find(i => mapColumns(i.column_values)['Type'] === 'PRD')
-  const prd = prdRaw ? { id: prdRaw.id, name: prdRaw.name, columns: mapColumns(prdRaw.column_values) } : null
+  const prdRaw = groupItems.find(i => mapColumnsFromIds(i.column_values, colMap)['Type'] === 'PRD')
+  const prd = prdRaw ? { id: prdRaw.id, name: prdRaw.name, columns: mapColumnsFromIds(prdRaw.column_values, colMap) } : null
 
   return { task, prd }
+}
+
+async function listTasks(boardId, groupId) {
+  const [boardCols, groupData] = await Promise.all([
+    getBoardColumns(boardId),
+    query(
+      `query ($boardId: [ID!], $groupIds: [String]) {
+         boards(ids: $boardId) {
+           groups(ids: $groupIds) { items_page { items { id name column_values { ${COLUMN_VALUES_FRAGMENT} } } } }
+         }
+       }`,
+      { boardId: [String(boardId)], groupIds: [groupId] }
+    ),
+  ])
+
+  const colMap = Object.fromEntries(boardCols.map(c => [c.id, c.title]))
+  return groupData.boards[0].groups[0].items_page.items.map(i => ({
+    id: i.id,
+    name: i.name,
+    columns: mapColumnsFromIds(i.column_values, colMap),
+  }))
 }
 
 async function createBoard(workspaceId, name) {
@@ -339,6 +356,12 @@ async function main() {
         break
       }
 
+      case 'list-tasks': {
+        const tasks = await listTasks(requireFlag(flags, 'board-id'), requireFlag(flags, 'group-id'))
+        console.log(JSON.stringify(tasks, null, 2))
+        break
+      }
+
       case 'update-column': {
         const boardId = requireFlag(flags, 'board-id')
         const itemId = requireFlag(flags, 'item-id')
@@ -358,7 +381,7 @@ async function main() {
 
       default:
         console.error(`Unknown command: ${command || '(none)'}`)
-        console.error('Commands: get-columns | create-board | create-column | create-group | match-columns | create-items | get-task-context | update-column')
+        console.error('Commands: get-columns | create-board | create-column | create-group | match-columns | create-items | get-task-context | list-tasks | update-column')
         process.exit(1)
     }
   } catch (err) {

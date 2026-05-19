@@ -11,13 +11,7 @@ disable-model-invocation: true
 
 ### 1. Fetch task + PRD
 
-Identify the source from the argument, then read both the task and its parent PRD:
-
-| Source            | Argument form                    | Reference                         |
-| ----------------- | -------------------------------- | --------------------------------- |
-| Local spec folder | `spec/prd-name/tasks/01-slug.md` | [LOCAL.md](references/LOCAL.md)   |
-| GitHub issue      | `42` or `#42`                    | [GITHUB.md](references/GITHUB.md) |
-| Monday.com        | `<board-id>/<item-id>`           | [MONDAY.md](references/MONDAY.md) |
+Load the `task-store` skill. Call the **fetch** operation with the argument — it detects the backend automatically and returns the task and its parent PRD.
 
 Read both before planning. The PRD provides context for every implementation decision.
 
@@ -37,7 +31,15 @@ Check the task description — if it implies a domain not listed, find and load 
 
 Run `/implement` to create and execute the plan. Apply `/tdd` wherever the task has testable logic.
 
-### 4. Verify
+### 4. Update status as you work
+
+Use `task-store` **update-status** to keep the task in sync:
+
+- When you start: set `in-progress`
+- If blocked on external input: set `blocked`
+- When all acceptance criteria pass: set `done`
+
+### 5. Verify
 
 - Server route or migration → run the server, exercise the route yourself, then shut it down
 - UI change → open the page, test the golden path and one edge case

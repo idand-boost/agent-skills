@@ -21,9 +21,7 @@ Ask the user for the PRD — it can be:
 
 Ask the user where they want the tasks created:
 
-1. **Local** (default) — creates `spec/<prd-name>/` folder with tasks as `.md` files
-2. **GitHub Issues** — creates real issues via `gh` CLI
-3. **Monday.com** — creates items on a board
+you can load the `task-store` skill to create tasks in the detected backend, or ask the user to specify a different target if they want the output in a different backend.
 
 ### 3. Explore the codebase (optional)
 
@@ -33,7 +31,7 @@ If not already explored, do so to understand current state.
 
 Break the PRD into **tracer bullet** tasks. Each task is a thin vertical slice through ALL integration layers, not a horizontal layer-only slice.
 
-Slices may be `HITL` (human-in-the-loop) or `AFK` (fully autonomous). Prefer AFK.
+Slices may be `HITL` (human-in-the-loop) or `AFK` (fully autonomous). Prefer AFK for tasks that can be tested e2e without human eyes, prefer `HITL` for missions that require human validation or UI/UX.
 
 <vertical-slice-rules>
 - Each slice delivers a narrow but COMPLETE path through every layer (schema, API, UI, tests)
@@ -56,8 +54,4 @@ Iterate until approved.
 
 ### 6. Create tasks in the chosen target
 
-See the relevant reference for the output format:
-
-- Local → [LOCAL.md](references/LOCAL.md)
-- GitHub → [GITHUB.md](references/GITHUB.md)
-- Monday.com → [MONDAY.md](references/MONDAY.md)
+Load the `task-store` skill, then call the **create** operation. The `task-store` skill owns all backend-specific logic — follow its reference for the detected backend.

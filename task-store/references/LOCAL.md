@@ -1,22 +1,30 @@
-# Local Output — spec folder
+# Local Backend — spec folder
 
 ## Folder structure
-
-Create `spec/<prd-name>/` in the project root (use kebab-case for `<prd-name>`).
 
 ```
 spec/
 └── <prd-name>/
-    ├── PRD.md          # Full PRD document
+    ├── PRD.md
     └── tasks/
         ├── 01-<slice>.md
         ├── 02-<slice>.md
         └── ...
 ```
 
-## PRD.md template
+---
 
-Follows the same structure as `/write-a-prd`. Write the full PRD here — not a summary.
+## Create
+
+1. Check if `spec/` exists; create it if not
+2. Create `spec/<prd-name>/tasks/` directory
+3. Write `PRD.md` using the prd-template below
+4. Write one `.md` file per task, zero-padded numbering (`01`, `02`, …), using the task-template below
+5. Create in dependency order (blockers first) so slugs are known when referenced
+
+Do NOT create any other files. Do NOT modify existing spec folders unless the user asks.
+
+### PRD.md template
 
 <prd-template>
 
@@ -77,38 +85,68 @@ Any further notes about the feature.
 
 </prd-template>
 
-## Task file template (`tasks/NN-<slug>.md`)
+### Task file template (`tasks/NN-<slug>.md`)
 
-<issue-template>
+<task-template>
 
 ## Parent
 
-Reference to `PRD.md` in the same spec folder (or a parent issue on the tracker if the PRD originated from one).
+Reference to `PRD.md` in the same spec folder.
 
 ## What to build
 
 A concise description of this vertical slice. Describe the end-to-end behavior, not layer-by-layer implementation.
 
-Avoid specific file paths or code snippets — they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it here and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
+Avoid specific file paths or code snippets — they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can, inline it here. Trim to the decision-rich parts only.
 
 ## Acceptance criteria
 
 - [ ] Criterion 1
 - [ ] Criterion 2
-- [ ] Criterion 3
 
 ## Blocked by
 
 - `01-<slug>.md` (or "None — can start immediately")
 
-</issue-template>
+</task-template>
 
-## Creation steps
+---
 
-1. Check if `spec/` exists; create it if not
-2. Create `spec/<prd-name>/tasks/` directory
-3. Write `PRD.md` using the full prd-template above (populate from existing PRD content or conversation context)
-4. Write one `.md` file per task, zero-padded numbering (`01`, `02`, …), using the issue-template above
-5. Create tasks in dependency order (blockers first) so slugs are known when referenced
+## Fetch
 
-Do NOT create any other files. Do NOT modify existing spec folders unless the user asks.
+Read the task file at the given path:
+
+```
+spec/<prd-name>/tasks/<NN>-<slug>.md
+```
+
+Parent PRD is always at:
+
+```
+spec/<prd-name>/PRD.md
+```
+
+Load both files into context as-is. Key sections to pay attention to:
+
+**From the task file:** `## What to build`, `## Acceptance criteria`, `## Blocked by`
+
+**From PRD.md:** `## Problem Statement`, `## Solution`, `## Implementation Decisions`, `## Testing Decisions`
+
+---
+
+## List
+
+Read all `.md` files in `spec/<prd-name>/tasks/` and return them as-is. Also read the `## Tasks` table from `PRD.md` for a quick summary of titles, types, and statuses.
+
+---
+
+## Update Status
+
+Edit the `## Tasks` table in `PRD.md`. Find the row matching the task and update the Status cell:
+
+| Unified status | Marker |
+|---|---|
+| `todo` | `[ ]` |
+| `in-progress` | `[-]` |
+| `done` | `[x]` |
+| `blocked` | `[!]` |
