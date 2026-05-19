@@ -41,6 +41,8 @@ skill-name/
 ---
 name: skill-name
 description: Brief description of capability. Use when [specific triggers].
+argument-hint:(optional) show in the ui relevant options to write with the skill. only use when relevant
+disable-model-invocation:(optional boolean) will decide if it is model invocable. ask user if it should be
 ---
 
 # Skill Name

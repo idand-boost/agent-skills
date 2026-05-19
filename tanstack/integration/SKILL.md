@@ -27,6 +27,7 @@ Guidelines for integrating TanStack Query, Router, and Start together effectivel
 - `setup-query-client-context` — Pass QueryClient through router context
 - `setup-provider-wrapping` — Correctly wrap with QueryClientProvider
 - `setup-stale-time-coordination` — Coordinate staleTime between router and query
+- `setup-combined-devtools` — Single unified panel for Router + Query (and other TanStack libs)
 
 ### Data Flow (Prefix: `flow-`)
 
