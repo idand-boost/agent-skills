@@ -1,6 +1,6 @@
 ---
 name: break-to-tasks
-description: Break a PRD or plan into independently-grabbable tasks using tracer-bullet vertical slices. Supports multiple output targets - local spec folder (default), GitHub issues, or Monday.com items. Use when user wants to convert a PRD to tasks, break down a plan into work items, or create implementation tasks from a spec.
+description: Break a PRD or plan into independently-grabbable tasks using tracer-bullet vertical slices. Use when user wants to convert a PRD to tasks, break down a plan into work items, or create implementation tasks from a spec.
 ---
 
 # PRD to Tasks
