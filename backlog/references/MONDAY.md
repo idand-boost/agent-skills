@@ -1,4 +1,4 @@
-# Monday.com Backend
+# Monday.com Backlog
 
 Script: `node ~/.claude/skills/task-store/scripts/monday.js`
 
@@ -23,14 +23,14 @@ Returns `{ boardId, columnMap }` with IDs for: `type`, `status`, `description`, 
 
 Columns created:
 
-| Title | Monday type | Labels |
-|---|---|---|
-| Type | status | blank / HITL / AFK / PRD |
-| Status | status | blank / In Progress / Done / Stuck |
-| Description | text | — |
-| Timeline | timeline | — |
-| Blocked By | dependency | — |
-| User Stories | text | — |
+| Title        | Monday type | Labels                             |
+| ------------ | ----------- | ---------------------------------- |
+| Type         | status      | blank / HITL / AFK / PRD           |
+| Status       | status      | blank / In Progress / Done / Stuck |
+| Description  | text        | —                                  |
+| Timeline     | timeline    | —                                  |
+| Blocked By   | dependency  | —                                  |
+| User Stories | text        | —                                  |
 
 > **Manual step required:** After `create-board`, open the **Blocked By** column settings in the Monday UI and select **Timeline** as the connected date column.
 
@@ -70,9 +70,27 @@ Build items array — first item **must be the PRD itself**:
 
 ```json
 [
-  { "name": "<PRD Title>", "type": "PRD", "description": "<full PRD content>", "blockedBy": [], "userStories": "" },
-  { "name": "<Task Title>", "type": "AFK", "description": "<what to build>", "blockedBy": [], "userStories": "As a user..." },
-  { "name": "<Task Title>", "type": "HITL", "description": "<what to build>", "blockedBy": ["<blocker name>"], "userStories": "..." }
+  {
+    "name": "<PRD Title>",
+    "type": "PRD",
+    "description": "<full PRD content>",
+    "blockedBy": [],
+    "userStories": ""
+  },
+  {
+    "name": "<Task Title>",
+    "type": "AFK",
+    "description": "<what to build>",
+    "blockedBy": [],
+    "userStories": "As a user..."
+  },
+  {
+    "name": "<Task Title>",
+    "type": "HITL",
+    "description": "<what to build>",
+    "blockedBy": ["<blocker name>"],
+    "userStories": "..."
+  }
 ]
 ```
 
@@ -124,9 +142,9 @@ node ~/.claude/skills/task-store/scripts/monday.js update-column \
   --value "<monday-value>"
 ```
 
-| Unified status | Monday value |
-|---|---|
-| `todo` | *(clear — set empty string)* |
-| `in-progress` | `In Progress` |
-| `done` | `Done` |
-| `blocked` | `Stuck` |
+| Unified status | Monday value                 |
+| -------------- | ---------------------------- |
+| `todo`         | _(clear — set empty string)_ |
+| `in-progress`  | `In Progress`                |
+| `done`         | `Done`                       |
+| `blocked`      | `Stuck`                      |

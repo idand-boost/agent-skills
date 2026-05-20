@@ -1,4 +1,4 @@
-# Local Backend — spec folder
+# Local Backlog — spec folder
 
 ## Folder structure
 
@@ -74,10 +74,10 @@ Any further notes about the feature.
 
 ## Tasks
 
-| #  | Title   | Type       | Blocked by | Status |
-|----|---------|------------|------------|--------|
-| 01 | \<title\> | AFK / HITL | —          | [ ]    |
-| 02 | \<title\> | AFK / HITL | 01         | [ ]    |
+| #   | Title     | Type       | Blocked by | Status |
+| --- | --------- | ---------- | ---------- | ------ |
+| 01  | \<title\> | AFK / HITL | —          | [ ]    |
+| 02  | \<title\> | AFK / HITL | 01         | [ ]    |
 
 ## Source
 
@@ -145,8 +145,8 @@ Read all `.md` files in `spec/<prd-name>/tasks/` and return them as-is. Also rea
 Edit the `## Tasks` table in `PRD.md`. Find the row matching the task and update the Status cell:
 
 | Unified status | Marker |
-|---|---|
-| `todo` | `[ ]` |
-| `in-progress` | `[-]` |
-| `done` | `[x]` |
-| `blocked` | `[!]` |
+| -------------- | ------ |
+| `todo`         | `[ ]`  |
+| `in-progress`  | `[-]`  |
+| `done`         | `[x]`  |
+| `blocked`      | `[!]`  |

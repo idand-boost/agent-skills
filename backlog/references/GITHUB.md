@@ -1,4 +1,4 @@
-# GitHub Backend — Issues
+# GitHub Backlog — Issues
 
 ## Prerequisites
 
@@ -48,10 +48,10 @@ EOF
 
 Print a summary table:
 
-| # | Issue | Title | Type | Blocked by |
-|---|-------|-------|------|------------|
-| 1 | #42   | …     | AFK  | —          |
-| 2 | #43   | …     | HITL | #42        |
+| #   | Issue | Title | Type | Blocked by |
+| --- | ----- | ----- | ---- | ---------- |
+| 1   | #42   | …     | AFK  | —          |
+| 2   | #43   | …     | HITL | #42        |
 
 Do NOT close or modify the parent PRD issue.
 
@@ -89,9 +89,9 @@ If no `task` label exists, list all open issues and filter by those referencing 
 
 ## Update Status
 
-| Unified status | GitHub action |
-|---|---|
-| `todo` | Reopen: `gh issue reopen <number>` |
-| `in-progress` | Comment: `gh issue comment <number> --body "Status: in-progress"` |
-| `done` | Close: `gh issue close <number>` |
-| `blocked` | Comment: `gh issue comment <number> --body "Status: blocked"` — also `gh issue edit <number> --add-label blocked` if label exists |
+| Unified status | GitHub action                                                                                                                     |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `todo`         | Reopen: `gh issue reopen <number>`                                                                                                |
+| `in-progress`  | Comment: `gh issue comment <number> --body "Status: in-progress"`                                                                 |
+| `done`         | Close: `gh issue close <number>`                                                                                                  |
+| `blocked`      | Comment: `gh issue comment <number> --body "Status: blocked"` — also `gh issue edit <number> --add-label blocked` if label exists |

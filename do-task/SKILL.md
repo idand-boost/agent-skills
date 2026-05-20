@@ -11,7 +11,7 @@ disable-model-invocation: true
 
 ### 1. Fetch task + PRD
 
-Load the `task-store` skill. Call the **fetch** operation with the argument — it detects the backend automatically and returns the task and its parent PRD.
+Load the `backlog` skill. Call the **fetch** operation with the argument — it detects the backlog automatically and returns the task and its parent PRD.
 
 Read both before planning. The PRD provides context for every implementation decision.
 
@@ -33,7 +33,7 @@ Run `/implement` to create and execute the plan. Apply `/tdd` wherever the task 
 
 ### 4. Update status as you work
 
-Use `task-store` **update-status** to keep the task in sync:
+Use `backlog` **update-status** to keep the task in sync:
 
 - When you start: set `in-progress`
 - If blocked on external input: set `blocked`

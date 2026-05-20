@@ -21,7 +21,7 @@ Ask the user for the PRD — it can be:
 
 Ask the user where they want the tasks created:
 
-you can load the `task-store` skill to create tasks in the detected backend, or ask the user to specify a different target if they want the output in a different backend.
+you can load the `backlog` skill to create tasks in the detected backlog, or ask the user to specify a different target if they want the output in a different backlog.
 
 ### 3. Explore the codebase (optional)
 
@@ -54,4 +54,4 @@ Iterate until approved.
 
 ### 6. Create tasks in the chosen target
 
-Load the `task-store` skill, then call the **create** operation. The `task-store` skill owns all backend-specific logic — follow its reference for the detected backend.
+Load the `backlog` skill, then call the **create** operation. The `backlog` skill owns all backend-specific logic — follow its reference for the detected backlog.
