@@ -1,5 +1,5 @@
 ---
-name: drill-down
+name: discovery
 description: Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when user wants to stress-test a plan, get drilled on their design, or mentions "drill down".
 ---
 

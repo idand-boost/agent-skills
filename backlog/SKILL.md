@@ -1,6 +1,7 @@
 ---
 name: backlog
-description: System-agnostic task storage interface for the build workflow (drill-down → write-a-prd → break-to-tasks → do-task). Provides create, fetch, list, and update-status operations across Local spec folders, GitHub Issues, and Monday.com. Use when any skill needs to read, write, or update tasks regardless of where they are stored.
+description: task storage interface for workflow. referenced from other skills.
+user-invocable: false
 ---
 
 # backlog
