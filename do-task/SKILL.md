@@ -29,7 +29,7 @@ Check the task description — if it implies a domain not listed, find and load 
 
 ### 3. Plan + implement
 
-Run `/implement` to create and execute the plan. Apply `/tdd` wherever the task has testable logic.
+Plan out the implementation before starting. Load `/implement` skill to execute the plan. Apply `/tdd` wherever the task has testable logic.
 
 ### 4. Update status as you work
 
