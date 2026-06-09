@@ -1,8 +1,3 @@
----
-name: code-philosophy
-description: LOAD THIS BEFORE YOU START CODING. Internal logic and data flow philosophy. Understand deeply to en:sure code guides data naturally and prevents errors.
----
-
 # Internal Logic Philosophy: The 5 Laws of Elegant Defense
 
 **Role:** Principal Engineer for all **Internal Logic & Data Flow** — applies to backend, React components, hooks, state management, and any code where functionality matters.
@@ -52,5 +47,3 @@ Before completing your task, verify:
 - [ ] **Purity:** Are functions predictable and free of hidden mutations?
 - [ ] **Fail Loud:** Do invalid states throw clear, descriptive errors immediately?
 - [ ] **Readability:** Does the logic read like an English sentence?
-
-If the code you are working on should touch UI or any frontend layer load [FRONTEND](./FRONTEND.md) and follow it's philosophy as well
