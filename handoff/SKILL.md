@@ -1,10 +1,10 @@
 ---
 name: handoff
-description: Compact the current conversation into a handoff document for another agent to pick up.
-argument-hint: "What will the next session be used for?"
+description: Compact the current conversation into a handoff session for another agent to pick up.
+argument-hint: 'What will the next session be used for?'
 ---
 
-Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save it to `/tmp/handoff-<topic>.md` where `<topic>` is a short kebab-case description of the session (e.g. `/tmp/handoff-auth-refactor.md`). Read the file before you write to it.
+Write a handoff prompt summarising the current conversation so a fresh agent can continue the work. Start a new session with that prompt and provide it to the next agent.
 
 Suggest the skills to be used, if any, by the next session.
 
